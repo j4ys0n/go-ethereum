@@ -2080,6 +2080,21 @@ func (api *TransactionAPI) PendingTransactions() ([]*RPCTransaction, error) {
 	return transactions, nil
 }
 
+// AllPendingTransactions returns all of the transactions that are in the transaction
+// pool that this node is aware of.
+func (api *TransactionAPI) AllPendingTransactions() ([]*RPCTransaction, error) {
+	pending, err := api.b.GetPoolTransactions()
+	if err != nil {
+		return nil, err
+	}
+	curHeader := api.b.CurrentHeader()
+	transactions := make([]*RPCTransaction, 0, len(pending))
+	for _, tx := range pending {
+		transactions = append(transactions, NewRPCPendingTransaction(tx, curHeader, api.b.ChainConfig()))
+	}
+	return transactions, nil
+}
+
 // Resend accepts an existing transaction and a new gas price and limit. It will remove
 // the given transaction from the pool and reinsert it with the new gas price and limit.
 func (api *TransactionAPI) Resend(ctx context.Context, sendArgs TransactionArgs, gasPrice *hexutil.Big, gasLimit *hexutil.Uint64) (common.Hash, error) {

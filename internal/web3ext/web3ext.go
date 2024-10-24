@@ -611,6 +611,18 @@ web3._extend({
 			}
 		}),
 		new web3._extend.Property({
+			name: 'allPendingTransactions',
+			getter: 'eth_allPendingTransactions',
+			outputFormatter: function(txs) {
+				var formatted = [];
+				for (var i = 0; i < txs.length; i++) {
+					formatted.push(web3._extend.formatters.outputTransactionFormatter(txs[i]));
+					formatted[i].blockHash = null;
+				}
+				return formatted;
+			}
+		}),
+		new web3._extend.Property({
 			name: 'maxPriorityFeePerGas',
 			getter: 'eth_maxPriorityFeePerGas',
 			outputFormatter: web3._extend.utils.toBigNumber
